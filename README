@@ -1,0 +1,17 @@
+This is an implementation of a doubly-linked list where
+the forward and backward links are XOR'd together into a
+single link.  This yields a list which takes the same
+amount of memory as a singly-linked list, however allows
+both forward and backward traversal.  
+
+The nature of the links make it so that iteration must
+start at either the head or the tail. 
+
+Outstanding issues: 
+The implementation isn't thread safe.  Also, upon a push*
+or a pop* operation, all existing iterators are (silently)
+invalidated, as the iterators' internal member pointers
+could become stale.
+
+Author: Christopher Cole
+
