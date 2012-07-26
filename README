@@ -7,11 +7,11 @@ both forward and backward traversal.
 The nature of the links make it so that iteration must
 start at either the head or the tail. 
 
-Outstanding issues: 
-The implementation isn't thread safe.  Also, upon a push*
-or a pop* operation, all existing iterators are (silently)
-invalidated, as the iterators' internal member pointers
-could become stale.
+Outstanding issues:
+1) On a push* or a pop* operation, all existing iterators
+are (silently) invalidated, as the iterators' internal
+member pointers could become stale.
+2) Decrement isn't implemented.
 
 Author: Christopher Cole
 
