@@ -37,9 +37,24 @@ class xlinked_list {
          */
         typedef struct xll_node {
             ptr_int ptr;
-            T& data;
-            xll_node(T& d, ptr_int p = 0)
-                :ptr(p), data(d) { }
+            T *data;
+
+            /* Node Constructors */
+            //only used in creation of sentinel nodes
+            xll_node() :ptr(0), data(NULL) { }
+
+            //Avoid the need for T to support default construction
+            //by using placement new and copy construction instead
+            xll_node(ptr_int p, const T& d)
+                :ptr(p), data(static_cast<T *>(::operator new(sizeof(T))))
+            {
+                data = new(data) T(d);
+            }
+
+            /* Node Destructor */
+            ~xll_node() {
+                if(data != NULL) delete data;
+            }
         } xll_node;
 
     public:
@@ -51,8 +66,8 @@ class xlinked_list {
             tail(NULL),
             num_nodes(0)
         {
-            head = new xll_node(*(T*)NULL);
-            tail = new xll_node(*(T*)NULL);
+            head = new xll_node();
+            tail = new xll_node();
 
             head->ptr = reinterpret_cast<ptr_int>(tail);
             tail->ptr = reinterpret_cast<ptr_int>(head);
@@ -148,12 +163,12 @@ class xlinked_list {
 
                 const T& operator*() const {
                     CHK_NULL(cur);
-                    return cur->data;
+                    return *(cur->data);
                 }
 
                 T& operator*() {
                     CHK_NULL(cur);
-                    return cur->data;
+                    return *(cur->data);
                 }
 
                 bool operator==(const const_iterator& other) const {
@@ -243,7 +258,7 @@ class xlinked_list {
             node_1 = reinterpret_cast<xll_node *>(head->ptr);
             if(node_1 == tail){ THROW_RTE("List is empty!"); }
 
-            return node_1->data;
+            return *(node_1->data);
         }
 
         T& front() {
@@ -263,7 +278,7 @@ class xlinked_list {
             node_1 = reinterpret_cast<xll_node *>(tail->ptr);
             if(node_1 == head){ THROW_RTE("List is empty!"); }
 
-            return node_1->data;
+            return *(node_1->data);
         }
 
         T& back() {
@@ -279,7 +294,7 @@ class xlinked_list {
         /* Note that use of the Modifiers will invalidate any existing iterators */
 
         /* Insert an item at the front of the list */
-        void push_front(T& item) {
+        void push_front(const T& item) {
             xll_node *node_1 = NULL;
             xll_node *node_2 = NULL;
             xll_node *node_new = NULL;
@@ -289,7 +304,7 @@ class xlinked_list {
             if(head->ptr == 0){ THROW_RTE("xlinked_list has been corrupted: head points to NULL"); }
 
             //Allocate node to be inserted
-            node_new = new xll_node(item, 0);
+            node_new = new xll_node(0, item);
 
             //Init node vars
             node_1 = reinterpret_cast<xll_node *>(head->ptr);
@@ -315,7 +330,7 @@ class xlinked_list {
             if(tail->ptr == 0){ THROW_RTE("xlinked_list has been corrupted: tail points to NULL"); }
 
             //Allocate node to be inserted
-            node_new = new xll_node(item, 0);
+            node_new = new xll_node(0, item);
 
             //Init node vars
             node_1 = reinterpret_cast<xll_node *>(tail->ptr);
