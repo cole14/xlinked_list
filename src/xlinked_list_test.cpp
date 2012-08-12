@@ -52,6 +52,25 @@ int main(int argc, char *argv[]){
         printf("%s\n", *iter);
     }
 
+    printf("\n");
+
+    {
+        xlinked_list< const char * >::iterator iter = xll->begin();
+        printf("%s\n", *iter);
+        iter++;
+        printf("%s\n", *iter);
+        iter++;
+        printf("%s\n", *iter);
+        iter--;
+        printf("%s\n", *iter);
+        iter--;
+        printf("%s\n", *iter);
+        iter++;
+        printf("%s\n", *iter);
+        iter++;
+        printf("%s\n", *iter);
+    }
+
     delete xll;
 
     return 0;

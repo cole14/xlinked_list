@@ -11,7 +11,6 @@ Outstanding issues:
 1) On a push* or a pop* operation, all existing iterators
 are (silently) invalidated, as the iterators' internal
 member pointers could become stale.
-2) Decrement isn't implemented.
 
 Author: Christopher Cole
 

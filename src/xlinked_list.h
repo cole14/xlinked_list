@@ -113,23 +113,21 @@ class xlinked_list {
         class const_iterator{
             public:
                 const_iterator(xll_node *start, xll_node *prev_to_start)
-                    :cur(start),
-                    prev(prev_to_start) { }
+                    :cur(start)
+                    ,prev(prev_to_start)
+                    ,forward(true) { }
 
                 const_iterator(const const_iterator& other)
-                    :cur(other.cur),
-                    prev(other.prev) { }
+                    :cur(other.cur)
+                    ,prev(other.prev)
+                    ,forward(true) { }
 
                 const_iterator operator++() { //pre-fix
-                    xll_node *next = NULL;
-
-                    //Sanity checks
-                    CHK_NULL(prev);
-                    CHK_NULL(cur);
-
-                    next = get_next_node();
-                    prev = cur;
-                    cur = next;
+                    if(!forward){
+                        swap_direction();
+                    }else{
+                        iterate();
+                    }
 
                     return (*this);
                 }
@@ -142,22 +140,18 @@ class xlinked_list {
 
                 //Currently a NOP
                 const_iterator operator--() { //pre-fix
-                    xll_node *next = NULL;
-
-                    //Sanity checks
-                    CHK_NULL(prev);
-                    CHK_NULL(cur);
-
-                    //TODO: Implement decrement by also
-                    //      storing a 'next' pointer akin
-                    //      to the 'prev'.
+                    if(forward){ 
+                        swap_direction();
+                    }else{
+                        iterate();
+                    }
 
                     return (*this);
                 }
 
                 const_iterator operator--(int) { //post-fix
                     const_iterator copy(*this);
-                    ++(*this);
+                    --(*this);
                     return copy;
                 }
 
@@ -185,18 +179,29 @@ class xlinked_list {
                 }
 
             private:
-                xll_node *get_next_node() {
+                void iterate() {
                     //Sanity checks
                     CHK_NULL(cur);
                     CHK_NULL(prev);
 
-                    return reinterpret_cast<xll_node*>(reinterpret_cast<ptr_int>(prev) ^ cur->ptr);
+                    xll_node *next = reinterpret_cast<xll_node*>(reinterpret_cast<ptr_int>(prev) ^ cur->ptr);
+                    prev = cur;
+                    cur = next;
+                }
+
+                void swap_direction() {
+                    xll_node *tmp = cur;
+                    cur = prev;
+                    prev = tmp;
+
+                    forward = (forward) ? false : true;
                 }
 
                 xll_node *get_prev_node() { return prev; }
 
                 mutable xll_node *cur;
                 mutable xll_node *prev;
+                bool forward;
         };
 
         /* Iterator over a xlinked_list */
