@@ -138,7 +138,6 @@ class xlinked_list {
                     return copy;
                 }
 
-                //Currently a NOP
                 const_iterator operator--() { //pre-fix
                     if(forward){ 
                         swap_direction();
